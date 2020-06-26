@@ -48,7 +48,7 @@ function App() {
   return (
     
     <div className="App">
-    <SmartDropDown countries = {countriesList}/>
+    <SmartDropDown countries = {countriesList} size={5} role="admin"/>
     </div>
   );
 }

@@ -1,82 +1,95 @@
-import React, { useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import SearchIcon from "@material-ui/icons/Search";
-import {
-    TextField, Paper, Typography, Select, MenuItem, InputAdornment, IconButton, FormHelperText,
-    FormControl, InputLabel
-} from "@material-ui/core";
+import React, { useState, useEffect, useRef } from 'react';
+import './style.css';
 
-const useStyles = makeStyles((theme) => ({
-    formControl: {
-        margin: theme.spacing(1),
-        width: 120,
-    },
-    selectwidth: {
-        width: "300px"
-    },
-}));
+export default function DropDown(props) {
+  const node = useRef();
+  const [displayMenu, setDisplayMenu] = useState(false);
+  const [selectValue, setSelect] = useState('');
+  const [searchTerm, setSearch] = useState('');
+  const [size, setSize] = useState(props.size);
+  const [add, setAdd] = useState(false);
+  let [searchResults, setsearchResults] = React.useState([]);
 
-export default function SmartDropDown(props) {
-    const classes = useStyles();
-    const [country, setCountry] = React.useState('');
-    let countries = props.countries;
- 
-    const handleChange = (event) => {
-        setCountry(event.target.value);
-    };
-    const [searchTerm, setSearch] = React.useState('');
-
-    const handleSearchTextChange = (e) => {
-        setSearch(e.target.value);
+  const handleClickOutside = e => {
+    if (node.current.contains(e.target)) {
+      // inside click
+      return;
     }
-    let [searchResults, setsearchResults] = React.useState([]);
-    useEffect(() => {
-        let results = [];
-        if (searchTerm != "") {
-            results = props.countries.filter(country =>
-                (country.name.toLowerCase().includes(searchTerm.toLowerCase()))
-            );
-        }
-        setsearchResults(results);
-        countries = searchResults;
-    }, [searchTerm]);
+    // outside click
+    setDisplayMenu(false);
+  };
 
+  const handleSearchTextChange = (e) => {
+    setSearch(e.target.value);
+  }
+
+  useEffect(()=>{
+    if (displayMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  },[displayMenu])
+  
+  useEffect(() => {
+    let results = [];
+    if (searchTerm != "") {
+      results = props.countries.filter(country =>
+        (country.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+    }
+    setsearchResults(results);
+  }, [searchTerm]);
+
+  const handleSelect = (event) => {
+    setDisplayMenu(false)
+    let val = event.target.dataset.value;
+    setSelect(val);
+  }
+
+  const handleMore = (event) => {
+    setSize(props.countries.length);
+  }
+  const addCountry = () =>{
+    setAdd(true);
+    props.countries.unshift({name:searchTerm});
+  }
+  debugger;
+  let countries = add ? props.countries : (searchResults.length > 0 ? searchResults : props.countries);
+  const countriesList = countries.slice(0, size).map((item, i) => {
     return (
-        <div>
-            <FormControl variant="outlined" className={classes.formControl}>
-                <InputLabel id="demo-simple-select-outlined-label">Select Country</InputLabel>
-                <Select
-                    className={classes.selectwidth}
-                    //labelId="demo-simple-select-outlined-label"
-                    id="demo-simple-select-outlined"
-                    value={country}
-                    onChange={handleChange}
-                    label="Select Country"
-                >
-                    <MenuItem>
-                        <TextField
-                            value={searchTerm}
-                            type="search"
-                            variant="outlined"
-                            margin="normal"
-                            placeholder="Search"
-                            onChange={(e) => handleSearchTextChange(e)}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                )
-                            }}
-                        />
-                    </MenuItem>
-                    {countries.map((item, index) => (
-                        <MenuItem key={item.code} value={item}>
-                            {item.name}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-        </div>
+      <div className="li" key={i} data-value={item.name} onClick={handleSelect}>{item.name}</div>
     );
+  });
+  return (
+    <div ref={node} className="dropdown">
+      <div className="button" onClick={(e) => setDisplayMenu(!displayMenu)}> {selectValue ? selectValue : "Select Country"}  </div>
+      {displayMenu ? (
+        <>
+          <div className="ul" >
+            <input className="searchBox" type="text" placeholder="Search" value={searchTerm}
+              onChange={(e) => handleSearchTextChange(e)} />
+              {countriesList.length>0 ? countriesList :
+              <div className="notFound">{searchTerm} not found 
+              {props.role=="admin" ?
+              <button className="addBtn" onClick={addCountry}>Add & Select</button> : ''
+              }</div>}
+               {/* {countriesList} */}
+            <button className="moreBtn" type="button" onClick= {handleMore}> {props.countries.length - props.size} more</button>
+          </div>
+        </>
+      ) :
+        (
+          null
+        )
+      }
+
+    </div>
+
+  );
+
 }
