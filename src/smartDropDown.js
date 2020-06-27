@@ -24,7 +24,6 @@ export default function DropDown(props) {
   const handleSearchTextChange = (e) => {
     setAdd(false);
     setSearch(e.target.value);
-    console.log(searchTerm, "searchterm");
     setIsSearch(true);
   }
 

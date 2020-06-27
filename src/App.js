@@ -17,24 +17,7 @@ function useFetch(url) {
 }
 
 function App() {
-  const countriesList = [ 
-    {name: 'India', code: 'IND'}, 
-    {name: 'United States', code: 'US'}, 
-    {name: 'Canada', code: 'CA'}, 
-    {name: 'Algeria', code: 'DZ'}, 
-    {name: 'Singapore', code: 'SG'}, 
-    {name: 'Australia', code: 'AU'}, 
-    {name: 'London', code: 'UK'}, 
-    {name: 'Switzerland', code: 'SZ'}, 
-    {name: 'Malaysia', code: 'ML'}, 
-    {name: 'Bangladesh', code: 'BAN'}, 
-    {name: 'Sri Lanka', code: 'SL'}, 
-    {name: 'France', code: 'FR'}, 
-    {name: 'Bahamas', code: 'BS'}, 
-    {name: 'Bahrain', code: 'BH'}, 
-];
   const [countries, loading] =  useFetch("./countries.json");
-  console.log(countries,"dg")
   return (
     <div className="App">
     <SmartDropDown countries = {countries} size={5} role="admin"/>
