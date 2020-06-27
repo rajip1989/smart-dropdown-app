@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import SmartDropDown from './smartDropDown'
-import array from './countries'
 function useFetch(url) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,10 +33,11 @@ function App() {
     {name: 'Bahamas', code: 'BS'}, 
     {name: 'Bahrain', code: 'BH'}, 
 ];
-  //const [countries, loading] =  useFetch('./countries');
+  const [countries, loading] =  useFetch("./countries.json");
+  console.log(countries,"dg")
   return (
     <div className="App">
-    <SmartDropDown countries = {countriesList} size={5} role="admin"/>
+    <SmartDropDown countries = {countries} size={5} role="admin"/>
     </div>
   );
 }

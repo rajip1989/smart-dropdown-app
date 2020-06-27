@@ -40,6 +40,9 @@ export default function DropDown(props) {
       setIsSearch(false);
       setSearch('');
       setsearchResults([]);
+      countries=[];
+      countriesList=[];
+      setSize(props.size);
     };
   }, [displayMenu])
 
@@ -76,6 +79,7 @@ export default function DropDown(props) {
     setAdd(true);
     props.countries.unshift({ name: searchTerm });
     setSelect(searchTerm);
+    setIsSearch(false);
   }
 
   if (isSearch) {
@@ -105,8 +109,10 @@ export default function DropDown(props) {
               {props.role == "admin" ?
                   <button className="addBtn" onClick={addCountry}>Add & Select</button> : null
                 }</div>}
-            {(isSearch && searchResults == 0) ? null :
-              <button className="moreBtn" type="button" onClick={handleMore}> {props.countries.length - props.size} more</button>
+            { (searchTerm == '') ?
+              <button className="moreBtn" type="button" onClick={handleMore}> {props.countries.length - size == 0 ? '' : `${props.countries.length - size} more` }</button>
+            :  (isSearch && searchResults == 0) ? null :
+            <button className="moreBtn" type="button" onClick={handleMore}> {props.countries.length - size == 0 ? '' : `${props.countries.length - size} more` }</button>
             }
           </div>
         </>
