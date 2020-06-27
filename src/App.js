@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import SmartDropDown from './smartDropDown'
-// function useFetch(url) {
-//   const [data, setData] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   async function fetchUrl() {
-//     const response = await fetch(url);
-//     const json = await response.json();
-//     setData(json);
-//     setLoading(false);
-//   }
-//   useEffect(() => {
-//     fetchUrl();
-//   }, []);
-//   return [data, loading];
-// }
+import array from './countries'
+function useFetch(url) {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  async function fetchUrl() {
+    const response = await fetch(url);
+    const json = await response.json();
+    setData(json);
+    setLoading(false);
+  }
+  useEffect(() => {
+    fetchUrl();
+  }, []);
+  return [data, loading];
+}
 
 function App() {
   const countriesList = [ 
@@ -33,20 +34,8 @@ function App() {
     {name: 'Bahamas', code: 'BS'}, 
     {name: 'Bahrain', code: 'BH'}, 
 ];
-
-  // const [countries, setCountries] = useState([]);
-
-  // useEffect(()=>{
-  //   // fetch('https://jsonplaceholder.typicode.com/users').then(data => {
-  //   //   data.json();
-  //   //   console.log(data.name, "data")
-  //   // }).then(res => setCountries(res));
-  //   setCountries(countriesList);
-  // },[]);
-  
-  //console.log(countries, "countries")
+  //const [countries, loading] =  useFetch('./countries');
   return (
-    
     <div className="App">
     <SmartDropDown countries = {countriesList} size={5} role="admin"/>
     </div>

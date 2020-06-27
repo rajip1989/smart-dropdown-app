@@ -1,4 +1,4 @@
-[ 
+const array = [
     {name: 'India', code: 'IND'}, 
     {name: 'United States', code: 'US'}, 
     {name: 'Canada', code: 'CA'}, 
@@ -13,4 +13,5 @@
     {name: 'France', code: 'FR'}, 
     {name: 'Bahamas', code: 'BS'}, 
     {name: 'Bahrain', code: 'BH'}, 
-];
+]
+export default array;

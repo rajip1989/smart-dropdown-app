@@ -8,7 +8,9 @@ export default function DropDown(props) {
   const [searchTerm, setSearch] = useState('');
   const [size, setSize] = useState(props.size);
   const [add, setAdd] = useState(false);
-  let [searchResults, setsearchResults] = React.useState([]);
+  const [searchResults, setsearchResults] = useState([]);
+  const [isSearch, setIsSearch] = useState(false);
+  let countries = [], countriesList = [];
 
   const handleClickOutside = e => {
     if (node.current.contains(e.target)) {
@@ -20,10 +22,13 @@ export default function DropDown(props) {
   };
 
   const handleSearchTextChange = (e) => {
+    setAdd(false);
     setSearch(e.target.value);
+    console.log(searchTerm, "searchterm");
+    setIsSearch(true);
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     if (displayMenu) {
       document.addEventListener("mousedown", handleClickOutside);
     } else {
@@ -32,9 +37,12 @@ export default function DropDown(props) {
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      setIsSearch(false);
+      setSearch('');
+      setsearchResults([]);
     };
-  },[displayMenu])
-  
+  }, [displayMenu])
+
   useEffect(() => {
     let results = [];
     if (searchTerm != "") {
@@ -45,6 +53,16 @@ export default function DropDown(props) {
     setsearchResults(results);
   }, [searchTerm]);
 
+  const sortDataByKey = (arr, key, sortType = 'ASC') => {
+    return arr.sort(function (a, b) {
+      if (a[key].toLowerCase() < b[key].toLowerCase())
+        return (sortType == 'ASC') ? -1 : 1;
+      if (a[key].toLowerCase() > b[key].toLowerCase())
+        return (sortType == 'ASC') ? 1 : -1;
+      return 0;
+    })
+  }
+
   const handleSelect = (event) => {
     setDisplayMenu(false)
     let val = event.target.dataset.value;
@@ -54,17 +72,26 @@ export default function DropDown(props) {
   const handleMore = (event) => {
     setSize(props.countries.length);
   }
-  const addCountry = () =>{
+  const addCountry = () => {
     setAdd(true);
-    props.countries.unshift({name:searchTerm});
+    props.countries.unshift({ name: searchTerm });
+    setSelect(searchTerm);
   }
-  debugger;
-  let countries = add ? props.countries : (searchResults.length > 0 ? searchResults : props.countries);
-  const countriesList = countries.slice(0, size).map((item, i) => {
-    return (
-      <div className="li" key={i} data-value={item.name} onClick={handleSelect}>{item.name}</div>
-    );
-  });
+
+  if (isSearch) {
+    countries = searchResults.length > 0 ? searchResults : (add ? props.countries : '')
+    if(searchTerm == '')
+      countries = props.countries;
+  }
+  else
+    countries = props.countries;
+  if (countries.length > 0) {
+    countriesList = sortDataByKey(countries, "name").slice(0, size).map((item, i) => {
+      return (
+        <div className="li" key={i} data-value={item.name} onClick={handleSelect}>{item.name}</div>
+      );
+    });
+  }
   return (
     <div ref={node} className="dropdown">
       <div className="button" onClick={(e) => setDisplayMenu(!displayMenu)}> {selectValue ? selectValue : "Select Country"}  </div>
@@ -73,13 +100,14 @@ export default function DropDown(props) {
           <div className="ul" >
             <input className="searchBox" type="text" placeholder="Search" value={searchTerm}
               onChange={(e) => handleSearchTextChange(e)} />
-              {countriesList.length>0 ? countriesList :
-              <div className="notFound">{searchTerm} not found 
-              {props.role=="admin" ?
-              <button className="addBtn" onClick={addCountry}>Add & Select</button> : ''
-              }</div>}
-               {/* {countriesList} */}
-            <button className="moreBtn" type="button" onClick= {handleMore}> {props.countries.length - props.size} more</button>
+            {countriesList.length > 0 ? countriesList : (searchTerm == '') ? props.countries :
+              <div className="notFound">{searchTerm.toUpperCase()} not found
+              {props.role == "admin" ?
+                  <button className="addBtn" onClick={addCountry}>Add & Select</button> : null
+                }</div>}
+            {(isSearch && searchResults == 0) ? null :
+              <button className="moreBtn" type="button" onClick={handleMore}> {props.countries.length - props.size} more</button>
+            }
           </div>
         </>
       ) :
